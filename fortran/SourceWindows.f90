@@ -5,7 +5,7 @@
     use Interpolation, only : TCubicSpline, TInterpGrid2D
     implicit none
 
-    integer, parameter :: window_21cm = 1, window_counts = 2, window_lensing = 3, gw_lensing=4 !MOD
+    integer, parameter :: window_21cm = 1, window_counts = 2, window_lensing = 3, window_gw = 4 !CDL
 
     Type, extends(TPythonInterfacedClass) :: TSourceWindow
         integer :: source_type = window_counts
