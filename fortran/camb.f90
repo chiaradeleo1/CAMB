@@ -256,7 +256,7 @@
     real(dl) nmassive
     character(LEN=*), intent(inout) :: ErrMsg
     character(LEN=:), allocatable :: NumStr, S, DarkEneryModel, RecombinationModel
-    logical :: DoCounts
+    logical :: DoCounts, DoGws !CDL
 
     CAMB_ReadParams = .false.
     call CAMB_SetDefParams(P)
@@ -282,6 +282,7 @@
     end if
     P%Do21cm = Ini%Read_Logical('Do21cm', .false.)
     DoCounts = .false.
+    DoGws = .false. !CDL
     do i=1, num_redshiftwindows
         allocate(TGaussianSourceWindow::P%SourceWindows(i)%Window)
         select type (RedWin=>P%SourceWindows(i)%Window)
@@ -292,6 +293,8 @@
                 RedWin%source_type = window_21cm
             elseif (S == 'counts') then
                 RedWin%source_type = window_counts
+            elseif (S == 'gws') then
+                RedWin%source_type = window_gw !CDL
             elseif (S == 'lensing') then
                 RedWin%source_type = window_lensing
             else
@@ -315,6 +318,11 @@
                 DoCounts = .true.
                 RedWin%bias = Ini%Read_Double_Array('redshift_bias', i)
                 RedWin%dlog10Ndm = Ini%Read_Double_Array('redshift_dlog10Ndm', i ,0.d0)
+            end if
+            if (RedWin%source_type == window_gw) then !CDL
+                DoGws = .true.
+                !RedWin%bias = Ini%Read_Double_Array('redshift_bias', i) 
+                !RedWin%dlog10Ndm = Ini%Read_Double_Array('redshift_dlog10Ndm', i ,0.d0) 
             end if
         class default
             call MpiStop('Probable compiler bug')
@@ -348,6 +356,19 @@
         call Ini%Read('counts_ISW', P%SourceTerms%counts_ISW)
         call Ini%Read('counts_potential', P%SourceTerms%counts_potential)
         call Ini%Read('counts_velocity', P%SourceTerms%counts_velocity)
+    end if
+
+    if (DoGws) then !CDL
+        call Ini%Read('gw_density', P%SourceTerms%gw_density)
+        !call Ini%Read('gw_evolve', P%SourceTerms%gw_evolve)
+        !call Ini%Read('gw_velocity', P%SourceTerms%gw_velocity)
+        !call Ini%Read('gw_isw', P%SourceTerms%gw_isw)
+        !call Ini%Read('gw_timedelay', P%SourceTerms%gw_timedelay)
+        !call Ini%Read('gw_lsd', P%SourceTerms%gw_lsd)
+        !call Ini%Read('gw_lensing', P%SourceTerms%gw_lensing)
+        !call Ini%Read('gw_potential', P%SourceTerms%gw_potential)
+        !call Ini%Read('gw_gradpotential', P%SourceTerms%gw_gradpotential)
+        !call Ini%Read('gwc_scalar_field', P%SourceTerms%gw_scalar_field)
     end if
 
     P%OutputNormalization=outNone

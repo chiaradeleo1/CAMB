@@ -1366,6 +1366,7 @@
     real(dl) s(0:10), t(0:10)
     real(dl) counts_radial_source, counts_velocity_source, counts_density_source, counts_ISW_source, &
         counts_redshift_source, counts_timedelay_source, counts_potential_source
+    real(dl) gw_density_source !CDL
     integer w_ix, lineoff,lineoffpol
     real(dl) Delta_TCMB
     integer j
@@ -1598,6 +1599,14 @@
                 end if
 
                 if (.not. CP%SourceTerms%use_21cm_mK) sources(3+w_ix)= sources(3+w_ix) /W%Fq
+
+            elseif (W%kind == window_gw) then !CDL
+                if(CP%SourceTerms%gw_density) then
+                    gw_density_source = 1._dl
+                else
+                    gw_density_source = 0
+                end if
+
             end if
         end associate
     end do
