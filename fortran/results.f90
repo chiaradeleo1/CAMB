@@ -2368,11 +2368,13 @@
         allocate(this%step_redshift(nstep), this%rhos_fac(nstep), this%drhos_fac(nstep))
         do i=1,State%num_redshiftwindows
             associate (Win => State%Redshift_W(i))
-                allocate(Win%winF(nstep),Win%wing(nstep),Win%dwing(nstep),Win%ddwing(nstep), &
-                    Win%winV(nstep),Win%dwinV(nstep),Win%ddwinV(nstep))
-                allocate(Win%win_lens(nstep),Win%wing2(nstep),Win%dwing2(nstep),Win%ddwing2(nstep))
-                allocate(Win%wingtau(nstep),Win%dwingtau(nstep),Win%ddwingtau(nstep))
-                if (Win%kind == window_counts) then
+                allocate(Win%winF(nstep),Win%wing(nstep),Win%dwing(nstep),Win%ddwing(nstep), & !CDL
+                    Win%winV(nstep),Win%dwinV(nstep),Win%ddwinV(nstep),Win%winISW(nstep),Win%dwinISW(nstep), & !CDL
+                    Win%winTD(nstep),Win%dwinTD(nstep),Win%winGPhi(nstep),Win%dwinGPhi(nstep),Win%winD(nstep),Win%dwinD(nstep), & !CDL
+                    Win%winLSD(nstep), Win%dwinLSD(nstep), Win%ddwinLSD(nstep)) !CDL
+                allocate(Win%win_lens(nstep),Win%wing2(nstep),Win%dwing2(nstep),Win%ddwing2(nstep)) !CDL
+                allocate(Win%wingtau(nstep),Win%dwingtau(nstep),Win%ddwingtau(nstep)) !CDL
+                if ((Win%kind == window_counts) .or. (Win%kind == window_gw) ) then !CDL 
                     allocate(Win%comoving_density_ev(nstep))
                 end if
             end associate
@@ -2407,22 +2409,33 @@
     ninterp = TimeSteps%npoints - jstart + 1
 
     do i = 1, State%num_redshiftwindows
-        associate (RedWin => State%Redshift_W(i))
+        associate (RedWin => State%Redshift_W(i)) !CDL
             RedWin%wing=0
             RedWin%winV=0
+            RedWin%winD=0
             RedWin%winF=0
             RedWin%wing2=0
+            RedWin%winTD=0
+            RedWin%winISW=0
+            RedWin%winLSD=0
+            RedWin%winGPhi=0
             RedWin%dwing=0
             RedWin%dwinV=0
+            RedWin%dwinD=0
             RedWin%dwing2=0
+            RedWin%dwinTD=0
+            RedWin%dwinISW=0
+            RedWin%dwinLSD=0
+            RedWin%dwinGPhi=0
             RedWin%ddwing=0
             RedWin%ddwinV=0
             RedWin%ddwing2=0
+            RedWin%ddwinLSD=0
             RedWin%wingtau=0
             RedWin%dwingtau=0
             RedWin%ddwingtau=0
             RedWin%Fq = 0
-            if (RedWin%kind == window_counts) then
+            if ((RedWin%kind == window_counts) .or. (RedWin%kind == window_gw) ) then !CDL
                 RedWin%comoving_density_ev  = 0
             end if
         end associate
@@ -2499,6 +2512,11 @@
                             RedWin%comoving_density_ev(j) = 0
                         end if
                     end if
+
+                elseif (RedWin%kind == window_gw) then !CDL  
+                    !window is n(a) where n is TOTAL not fractional number
+                    RedWin%wing(j) = adot *window  
+         
                 end if
             end associate
         end do

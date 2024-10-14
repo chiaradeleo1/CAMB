@@ -136,14 +136,14 @@ class SourceTermParams(CAMB_Structure):
         ("counts_ISW", c_bool, "Include tiny ISW terms"),
         ("counts_potential", c_bool, "Include tiny terms in potentials at source"),
         ("counts_evolve", c_bool, "Account for source evolution"),
-        ("gw_density" , c_bool, "Include the density perturbation source for gws"),
         ("line_phot_dipole", c_bool, "Dipole sources for 21cm"),
         ("line_phot_quadrupole", c_bool, "Quadrupole sources for 21cm"),
         ("line_basic", c_bool, "Include main 21cm monopole density/spin temperature sources"),
         ("line_distortions", c_bool, "Redshift distortions for 21cm"),
         ("line_extra", c_bool, "Include other sources"),
         ("line_reionization", c_bool, "Replace the E modes with 21cm polarization"),
-        ("use_21cm_mK", c_bool, "Use mK units for 21cm")]
+        ("use_21cm_mK", c_bool, "Use mK units for 21cm"),
+        ("gw_density" , c_bool, "Include the density perturbation source for gws")] #CDL
 
 
 class CustomSources(CAMB_Structure):

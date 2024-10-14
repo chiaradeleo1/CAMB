@@ -1602,11 +1602,11 @@
 
             elseif (W%kind == window_gw) then !CDL
                 if(CP%SourceTerms%gw_density) then
-                    gw_density_source = 1._dl
+                    gw_density_source = W%wing(j)*(clxc*W%Window%GetBias(k,a) + (W%comoving_density_ev(j) - 3*adotoa)*sigma/k)
                 else
                     gw_density_source = 0
                 end if
-
+                sources(3+w_ix)=    gw_density_source
             end if
         end associate
     end do
